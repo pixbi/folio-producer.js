@@ -1,7 +1,62 @@
 
+var fs = require('fs');
+var qs = require('querystring');
+var util = require('util');
 var https = require('https');
+var crypto = require('crypto');
 var config = require('./config');
 var client = require('./client');
+
+exports.createSession = function createSession (email, password) {
+
+  function createAuthHeader () {
+    var timestamp = Date.now();
+    var obj = {
+      'oauth_consumer_key': config['consumer_key'],
+      'oauth_timestamp': timestamp,
+      'oauth_signature_method': 'HMAC-SHA256',
+      'oauth_signature': createSignature(timestamp)
+    };
+
+    return 'OAuth ' + Object.keys(obj).map(function (k) {
+      return k + '="' + obj[k] + '"'
+    }).join(',');
+  }
+
+  function createOauthMessage (timestamp) {
+    var query = {
+      'oauth_consumer_key': config['consumer_key'],
+      'oauth_signature_method': 'HMAC-SHA256',
+      'oauth_timestamp': timestamp
+    };
+    return [
+      'POST',
+      encodeURIComponent(config['endpoint'] + 'webservices/sessions'),
+      encodeURIComponent(qs.stringify(query))
+    ].join('&');
+  }
+
+  function createSignature (timestamp) {
+    var msg = createOauthMessage(timestamp);
+    var hash = crypto.createHmac('sha256', config['consumer_secret']);
+    hash.update(msg);
+    return hash.digest('base64');
+  }
+
+  var req = https.request({
+    'method': 'POST',
+    'headers': {
+      'Authorization': createAuthHeader()
+    }
+  });
+
+  req.end(JSON.stringify({
+    'email': email,
+    'password': password
+  }));
+
+  return req;
+};
 
 exports.createFolio = function createFolio (name, num, magazineTitle, width, height) {
   
@@ -34,22 +89,6 @@ exports.createArticle = function createArticle (filePath, folioId) {
   req.end(JSON.stringify({
     'filepath': filePath,
     'folio_id': folioId
-  }));
-
-  return req;
-};
-
-exports.createSession = function createSession (email, password) {
-  var req = https.request({
-    'method': 'POST',
-    'headers': {
-      // TODO: auth required
-    }
-  });
-
-  req.end(JSON.stringify({
-    'email': email,
-    'password': password
   }));
 
   return req;
