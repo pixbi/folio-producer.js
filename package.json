@@ -1,0 +1,19 @@
+{
+  "name": "folio-producer",
+  "version": "0.0.1",
+  "description": "folio producer api client that compatible with npm",
+  "main": "app/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:pixbi/folio-producer.js"
+  },
+  "author": "Yorkie Liu <yorkiefixer@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pixbi/folio-producer.js/issues"
+  },
+  "homepage": "https://github.com/pixbi/folio-producer.js"
+}
