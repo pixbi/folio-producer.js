@@ -5,7 +5,6 @@ var util = require('util');
 var https = require('https');
 var crypto = require('crypto');
 var config = require('./config');
-var client = require('./client');
 
 exports.createSession = function createSession (email, password) {
 
@@ -44,6 +43,7 @@ exports.createSession = function createSession (email, password) {
   }
 
   function onresponse (res) {
+    console.log(res);
     console.log(res.statusCode);
   }
 
