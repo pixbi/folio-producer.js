@@ -43,12 +43,19 @@ exports.createSession = function createSession (email, password) {
     return hash.digest('base64');
   }
 
+  function onresponse (res) {
+    console.log(res.statusCode);
+  }
+
   var req = https.request({
     'method': 'POST',
     'headers': {
-      'Authorization': createAuthHeader()
-    }
-  });
+      'Authorization': createAuthHeader(),
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    'hostname': config['endpoint'].replace('https://', ''),
+    'path': 'webservices/sessions'
+  }, onresponse);
 
   req.end(JSON.stringify({
     'email': email,
